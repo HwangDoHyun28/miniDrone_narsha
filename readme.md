@@ -14,13 +14,13 @@
 - [Deep Learning Toolbox Converter for ONNX Model Format](https://kr.mathworks.com/matlabcentral/fileexchange/67296-deep-learning-toolbox-converter-for-onnx-model-format)
 
 ## 2. File structure
-├── cnn
-│       └── model: drone_cnn.onnx             
+├── cnn                 
+│       └── model: drone_cnn.onnx                     
 ├── regression                                         
-│       ├── 다항식 곡선 피팅: step1_p2.xls  
-│       ├── 다항식 곡선 피팅: step2_p3.xls
-│       └──  다항식 곡선 피팅: step3_p3.xls
-└── main.m
+│       ├── 다항식 곡선 피팅: step1_p2.xls        
+│       ├── 다항식 곡선 피팅: step2_p3.xls             
+│       └──  다항식 곡선 피팅: step3_p3.xls                 
+└── main.m                 
 
 ## 3. 대회진행 전략
 여기서 적어야 되는 거 
