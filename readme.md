@@ -23,10 +23,6 @@
 └── main.m                 
 
 ## 3. 대회진행 전략
-여기서 적어야 되는 거 
-2. 중점을 찾은 후에는 다항식 곡선 피팅을 활용하여 드론이 장애물을 통과하기 위해 필요한 거리를 구하고 움직인다.
-3. 표식에 대해서는 마스킹했을 때의 존재여부 만을 확인한다.
-
 
 1. 본 대회에서는 장애물에 해당하는 구체적인 완벽한 중점을 좌표값으로 찾는 것이 어려울 뿐더러 필수적이지 않다는 생각을 하게 되었다.
 	- 이에 최대한 많은 예외상황을 커버할 수 있는 CNN모델을 활용하여 해당 frame에서 움직여야 할 방향을 얻어 중점에 위치하도록 tello의 최소 거리 단위로 움직이게 하는 방향으로 결정하였다. 	
@@ -44,7 +40,7 @@
 ![cnn_dataset](cnn/cnn_dataset.png)
 > 연산량을 최대한으로 줄이기 위하여 input image는 tello가 얻는 frame을 마스킹 한 후에 추가적으로 0.3배 만큼 줄여서 `[216, 288, 1]`형태를 사용하였다.
 
-![cnn_model_architecture](cnn/cnn_model_architecture.png)
+![cnn_model_architecture](cnn/cnn_model_architecture.PNG)
 >결과적으로 드론은 장애물의 중점에 위치되도록 ryze tello drone이 제공하는 6가지 이동방향에 해당하는 `[back, forward, left, right, up, down]` 결론을 내리게 된다.
 
 ![cnn_label_result](cnn/cnn_label_result.png)
