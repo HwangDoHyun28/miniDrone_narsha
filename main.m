@@ -1,7 +1,7 @@
 % 각 step 별로 다중곡선피팅의 값을 저장해둔 파일을 가져온다.
 p1 = readmatrix('regression/step1_p2.xls');
 disp("get p1")
-p2 = readmatrix('regression/step2_p3.xls');
+p2 = readmatrix('regression/step2_p2.xls');
 disp("get p2")
 p3 = readmatrix('regression/step3_p2.xls');
 disp("get p3")
