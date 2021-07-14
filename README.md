@@ -165,7 +165,7 @@ function final_dist = passing_obstacle(hole, p)
 end
 </code>
 </pre>
-> 다중곡선피팅을 통해 모든 거리에 대해서 드론이 전진해야 할 이동거리를 예측한다. 예측값은 final_dist라는 변수에 대입한다. 
+> 다항식 곡선피팅을 통해 모든 거리에 대해서 드론이 전진해야 할 이동거리를 예측한다. 예측값은 final_dist라는 변수에 대입한다. 
 
 
 #### 3) Mark Recognition
