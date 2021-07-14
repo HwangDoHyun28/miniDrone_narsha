@@ -129,7 +129,7 @@ end
                    
 		   
 #### 2) Distance prediction using multiburve fitting
-> 장애물의 구멍 크기는 각 단계별로 고정된 값이므로, 이를 기반으로 하여 드론이 장애물을 통과하기 위해 전진해야하는 거리를 예측한다. 거리 예측은 다식 곡선 피팅을 활용한다.
+> 장애물의 구멍 크기는 각 단계별로 고정된 값이므로, 이를 기반으로 하여 드론이 장애물을 통과하기 위해 전진해야하는 거리를 예측한다. 거리 예측은 다항식 곡선 피팅을 활용한다.
 <pre>
 <code>
 function hole = finding_hole(detect_blue)
