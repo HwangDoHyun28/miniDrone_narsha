@@ -254,7 +254,7 @@ end
 
 
 #### 5) Step 2,3_passing_obstacle
-> 2~3단계 장애물은 많은 경우의 수가 존재하기에 CNN을 활용하여 드론의 이동방향을 결정한다. 
+> 2, 3단계 장애물은 많은 경우의 수가 존재하기에 CNN을 활용하여 드론의 이동방향을 결정한다. 
 <pre>
 <code>
 function find_center(myDrone, label)
