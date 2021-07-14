@@ -332,5 +332,5 @@ moveforward(myDrone, "Distance", 0.2)
 ![testing](image_sorce/testing.gif)
 
 ## 9. 저자
-#### Team Narsha :star:
+#### :star: Team Narsha 
 - 팀원: 황도현, 성강, 안온유 
