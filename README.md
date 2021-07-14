@@ -15,12 +15,11 @@
 
 -------------------------
 
-## 서론
-### 1. 사용 패키지
+## 1. 사용 패키지
 - [djitello](https://kr.mathworks.com/matlabcentral/fileexchange/74434-matlab-support-package-for-ryze-tello-drones?s_tid=srchtitle)
 - [Deep Learning Toolbox Converter for ONNX Model Format](https://kr.mathworks.com/matlabcentral/fileexchange/67296-deep-learning-toolbox-converter-for-onnx-model-format)
 
-### 2. 파일 구조
+## 2. 파일 구조
 ├── cnn                 
 │       └── model: drone_cnn.onnx      
 ├── regression                                         
@@ -29,7 +28,7 @@
 │       └── 다항식 곡선 피팅: step3_p3.xls                 
 └── main.m                 
 
-### 3. 대회진행 전략
+## 3. 대회진행 전략
 
 1. 본 대회에서 제공하는 맵은 장애물이 x,y,z축 상에서 고정되지 않고 변동이 가능하여, 장애물의 위치에 대한 수많은 다양성이 존재한다.        장애물의 중점과 같은 좌표값을 찾는 방식의 경우, 특정 상황에서만 적용 가능하기에 발생할 수 있는 모든 경우를 대처하기에는 제한적인 방식이라고 판단하였다.        따라서 장애물의 중점을 구체적인 좌표값으로 찾지 않고, 여러 상황에 대해서 처리가 가능한 CNN을 활용하였다.  
 	- 최대한 많은 예외상황을 처리할 수 있는 CNN모델을 활용해 드론이 장애물을 바라보는 시점의 frame에서 장애물의 중점으로 이동하기 위한 방향을 얻은 후, 해당 방향으로 tello의 최소 거리 단위만큼 움직이도록 하는 방식을 채택하였다. 	
@@ -39,12 +38,11 @@
 
 --------------
 
-## 본론
 ![is_center](https://user-images.githubusercontent.com/63354116/125572421-b3185ad1-8bd9-4616-9b18-ccbad96fb9c1.png)
 
 > 여기서 장애물의 중점에 드론이 위치한다는 말은 장애물의 중점과 드론이 동일 축상에 위치한다는 것을 의미한다.
 
-### 1. CNN 모델
+## 4. CNN 모델
 > 연산량을 최대한으로 줄이기 위하여 input image는 tello가 얻는 frame을 마스킹 한 후에 추가적으로 0.3배 만큼 줄여서 `[216, 288, 1]`형태를 사용한다.
 
 ![cnn_model_architecture](cnn/cnn_model_architecture.PNG)
@@ -53,7 +51,7 @@
 ![cnn_label_result](cnn/cnn_label_result.png)
 
 
-### 2. 다항식 곡선 피팅
+## 5. 다항식 곡선 피팅
 > CNN을 활용하여 장애물의 중점을 찾은 후에는 장애물을 통과하기 위한 moveforward의 distance에 해당하는 값을 알아내야 한다. 
 
 ![step3_6](regression/step3_6.png)
@@ -66,8 +64,8 @@
 > 드론이 앞으로 움직이면 일정 거리부터 구멍의 윗부분이 잘리는 상황이 발생하였지만, 모든 1~3m 상황에서 증가되는 크기의 양에는 차이가 있었더라도, 증가되는 경향은 계속 보였기 때문에,  데이터의 형태가 지수함수나 이차함수 꼴이라고 생각하고 이를 고려하였다. 각각에 해당하는 오차율을 토대로 분석한 결과 이차함수꼴이 더 타당하다는 결과를 얻을 수 있었다.
 
 
-### 3. 각 단계별 알고리즘 정리
-#### 1) 1단계
+## 6. 각 단계별 알고리즘 정리
+### 1) 1단계
 > 1단계의 경우에는 장애물의 중점의 높이가 고정되어 있는 상황이므로, 이에 해당하는 높이로 드론을 위치시키고 미리 준비한 다항식 곡선 피팅 값을 활용하여 한번에 장애물을 통과하도록 한다.       
 ![step_1](image_sorce/step_1.PNG)   
 
@@ -75,7 +73,7 @@
 
 
 
-#### 2) 2,3단계
+### 2) 2,3단계
 > 2, 3단계의경우에는 장애물의 중점과 드론 사이에 존재하는 변수의 양이 늘어났기 때문에, 이를 CNN을 활용하여 처리한다. 
 > 즉, CNN을 통해 드론을 장애물의 중점에 위치시키고,  마찬가지로 각 단계에 해당하여 미리 준비한 다항식 곡선 피팅 값을 활용하여 한번에 장애물을 통과하도록 한다.         
 ![step_2_3](image_sorce/step_2_3.PNG)    
@@ -85,8 +83,8 @@
 
 --------------
 
-### 4. 소스코드 설명
-#### 1) HSV Transformation and Masking Processing
+## 7. 소스코드 설명
+### 1) HSV Transformation and Masking Processing
 > 연산량을 줄이기 위해 tello가 얻는 frame을 HSV 색공간으로 변환한 후, 특정 색상만 검출되도록 마스킹 처리한다.       
 
 > 장애물의 색상과 표식의 색상에 대해서만 마스킹 처리하였으며, 각 색상에 대한 마스킹 처리는 함수화한다. 
@@ -134,7 +132,7 @@ end
 > 3단계 표식에 해당하는 보라색만 검출되도록 마스킹 처리한다. 마스킹 처리가 완료되면 보라색은 백색(1), 보라색을 제외한 나머지 색상은 흑색(0)으로 인식된다.
 
 
-#### 2) Distance prediction using multiburve fitting
+### 2) Distance prediction using multiburve fitting
 > 장애물의 구멍 크기는 각 단계별로 고정된 값이므로, 이를 기반으로 하여 드론이 장애물을 통과하기 위해 전진해야하는 거리를 예측한다. 거리 예측은 다항식 곡선 피팅을 활용한다.
 <pre>
 <code>
@@ -172,8 +170,8 @@ end
 > 사전에 학습시켜둔 다항식 곡선 피팅값을 불러오고, 이를 통해 모든 거리에 대해서 드론이 전진해야 할 이동거리를 예측한다. 예측값은 final_dist라는 변수에 대입한다. 
 
 
-#### 3) Mark Recognition
-##### 3-1) Red Mark Recognition
+### 3) Mark Recognition
+#### 3-1) Red Mark Recognition
 <pre>
 <code>
 function detecting_red(myDrone, cam)
@@ -198,7 +196,7 @@ end
 > 픽셀 수가 400미만이면 표식을 인식하기에는 거리가 멀거나, 표식을 인식하지 못한 것으로 간주한다. 따라서 표식을 인식할 수 있도록(픽셀 수가 400이상이 되도록) 20cm씩 전진한다. 
 
 
-##### 3-2) Purple Mark Recognition
+#### 3-2) Purple Mark Recognition
 <pre>
 <code>
 function detecting_purple(myDrone, cam)
@@ -222,10 +220,10 @@ end
 > 픽셀 수가 400미만이면 표식을 인식하기에는 거리가 멀거나, 표식을 인식하지 못한 것으로 간주한다. 따라서 표식을 인식할 수 있도록(픽셀 수가 400이상이 되도록) 20cm씩 전진한다.
 
 
-#### 4) Step 1_passing_obstacle
+### 4) Step 1_passing_obstacle
 > 1단계 장애물은 장애물의 높이가 고정되어 있고, 좌우 이동이 없기 때문에 CNN을 별도로 사용하지 않는다.                
 
-##### 4-1) Step1_find_center
+#### 4-1) Step1_find_center
 <pre>
 <code>
 function step1_find_center(myDrone)
@@ -248,7 +246,7 @@ end
 > 중점의 높이와 height 간의 차가 양수일 경우에는 드론이 상승하도록 하고, 음수일 경우에는 하강하도록 한다. 
 
 
-#### 5) Step 2,3_passing_obstacle
+### 5) Step 2,3_passing_obstacle
 > 2, 3단계 장애물은 많은 경우의 수가 존재하기에 CNN을 활용하여 드론의 이동방향을 결정한다. 
 <pre>
 <code>
@@ -275,7 +273,7 @@ end
 > drone이 움직일 수 있는 최소의 거리는 20cm이므로 중점에서 10cm가 벗어난 상황에도 대응하기 위하여, 좌우, 위아래로 묶음지어 하나는 20cm, 반대 방향은 30cm가 이동하도록 한다. 
 
 
-#### 6) Passing_obstacle_using_CNN
+### 6) Passing_obstacle_using_CNN
 > CNN을 이용한 장애물 통과 과정을 정리한 것이다. 해당 방식은 2,3단계 장애물을 통과할 때에만 적용된다. 
 <pre>
 <code>
@@ -318,8 +316,7 @@ moveforward(myDrone, "Distance", 0.2)
 
 > 드론이 장애물의 중점과 동일한 축상에 존재할 경우(label == forward일 경우)에는 다항식 곡선피팅을 이용하여 예측한 거리만큼 드론을 전진한다.                      
 
-## 결론
-### 1. 실제 비행 장면
+## 8. 실제 비행 장면
 ![testing](image_sorce/testing.gif)
 
-### 2. 저자
+## 9. 저자
