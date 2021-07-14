@@ -17,13 +17,6 @@
 ### 2. File structure
 ├── cnn                 
 │       └── model: drone_cnn.onnx  
-├── direction                                         
-│       ├── forward        
-│       ├── back
-│       ├── left
-│       ├── right
-│       ├── up
-│       └── down
 ├── regression                                         
 │       ├── 다항식 곡선 피팅: step1_p2.xls        
 │       ├── 다항식 곡선 피팅: step2_p3.xls             
