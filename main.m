@@ -10,7 +10,7 @@ disp("get p3")
 % 2,3단계는 변수가 다양하기 때문에 CNN을 이용하여 드론의 이동방향을 결정하여 장애물의 중점과 드론의 위치를 일치시킨다.
 % ["back", "down", "forward", "left", "right", "up"]의 6가지 방향에 대해 드론의 이동방향을 예측하는 cnn_model을 가져온다.
 classes = ["back", "down", "forward", "left", "right", "up"];
-net = importONNXNetwork('cnn/drone_cnn.onnx', 'OutputLayerType', 'classification', "Classes", classes); 
+net = importONNXNetwork('cnn/drone_cnn_2.onnx', 'OutputLayerType', 'classification', "Classes", classes); 
 
 myDrone = ryze();
 cam = camera(myDrone);
@@ -69,6 +69,7 @@ end
 moveforward(myDrone, "Distance", final_dist)
 % close(f)
 detecting_red(myDrone, cam)
+moveforward(myDrone, "Distance", 0.2)
 
 
 % step 3_passing_obstacle: using cnn
@@ -101,7 +102,7 @@ while final_dist == inf
     final_dist = passing_obstacle(hole, p3)
 end
 %예측한 값만큼 드론 전진.
-moveforward(myDrone, "Distance", final_dist)
+moveforward(myDrone, "Distance", final_dist+0.2)
 % close(f)
 detecting_purple(myDrone, cam)
 
@@ -203,9 +204,10 @@ end
 
 function final_dist = passing_obstacle(hole, p)
     %다중곡선피팅을 통해 모든 거리에 대해서 드론이 전진해야 할 이동거리를 예측.
+    disp(sum(sum(hole)))
     reg_exp = polyval(p, sum(sum(hole)));
-    dist = exp(reg_exp);
-    final_dist = round(dist,3)+0.3
+    dist = reg_exp;
+    final_dist = round(dist,3)+0.4
 end
 
 
@@ -218,7 +220,7 @@ function detecting_red(myDrone, cam)
         % 픽셀 수가 400이상이면 반시계 방향으로 90도 회전 한 후, 90cm 전진.
         if detect_red_sum >= 400
             turn(myDrone,deg2rad(-90));
-            moveforward(myDrone, "Distance", 0.9)
+            moveforward(myDrone, "Distance", 1)
             pause(1);
             break
         % 픽셀 수가 400미만이면 400이상이 될 때까지 20cm씩 전진.
