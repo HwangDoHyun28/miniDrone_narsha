@@ -4,17 +4,27 @@
 --------------
 <목차>
 
-1. [Getting Started](#getting-started)
-2. [알고리즘 설명](#알고리즘-설명)
-3. [소스코드 설명](#소스코드-설명)
+1. [서론](#서론)
+	1) [사용 패키지](#1.-사용-패키지)
+	2) [File structure](#2.-파일-구조)
+	3) [대회진행 전략](#3-대회진행-전략)
+2. [본론](#본론)
+	1) [CNN 모델](#1.-CNN-모델) 
+	2) [다항식 곡선 피팅](#2.-다항식-곡선-피팅)
+	3) [각 단계별 알고리즘 정리](#3.-각-단계별-알고리즘-정리)
+	4) [소스코드 설명](#4.-소스코드-설명)
+3. [결론](#결론)	
+	1) 실제 비행 장면(#1.-실제-비행-장면) 
+	2) 저자(#2.-저자)
+
 -------------------------
 
-## Getting Started
-### 1. Requirments
+## 서론
+### 1. 사용 패키지
 - [djitello](https://kr.mathworks.com/matlabcentral/fileexchange/74434-matlab-support-package-for-ryze-tello-drones?s_tid=srchtitle)
 - [Deep Learning Toolbox Converter for ONNX Model Format](https://kr.mathworks.com/matlabcentral/fileexchange/67296-deep-learning-toolbox-converter-for-onnx-model-format)
 
-### 2. File structure
+### 2. 파일 구조
 ├── cnn                 
 │       └── model: drone_cnn.onnx      
 ├── regression                                         
@@ -27,13 +37,13 @@
 
 1. 본 대회에서 제공하는 맵은 장애물이 x,y,z축 상에서 고정되지 않고 변동이 가능하여, 장애물의 위치에 대한 수많은 다양성이 존재한다.        장애물의 중점과 같은 좌표값을 찾는 방식의 경우, 특정 상황에서만 적용 가능하기에 발생할 수 있는 모든 경우를 대처하기에는 제한적인 방식이라고 판단하였다.        따라서 장애물의 중점을 구체적인 좌표값으로 찾지 않고, 여러 상황에 대해서 처리가 가능한 CNN을 활용하였다.  
 	- 최대한 많은 예외상황을 처리할 수 있는 CNN모델을 활용해 드론이 장애물을 바라보는 시점의 frame에서 장애물의 중점으로 이동하기 위한 방향을 얻은 후, 해당 방향으로 tello의 최소 거리 단위만큼 움직이도록 하는 방식을 채택하였다. 	
-2. 중점을 찾은 후에 드론이 바라보는 구멍의 크기는 각 단계별로 고정되어 있는 크기이므로, 이에 기반하여, 드론이 장애물을 통과하기 위해 움직여야 하는 거리를 다식 곡선 피팅을 활용하여 얻었다.
-	- 물론 드론이 앞으로 움직이면 일정 거리부터 구멍의 윗부분이 잘리는 상황이 발생하였지만, 모든 1~3m 상황에서 증가되는 크기의 양에는 차이가 있었더라도, 증가되는 경향은 계속 보였기 때문에, 각 거리와 구멍의 크기를 일대일 대응시킬 수 있었다. 
+2. 중점을 찾은 후에 드론이 바라보는 구멍의 크기는 각 단계별로 고정되어 있는 크기이므로, 이에 기반하여, 드론이 장애물을 통과하기 위해 움직여야 하는 거리를 다항식 곡선 피팅을 활용하여 얻었다.
+	- 물론 드론이 앞으로 움직이면 일정 거리부터 구멍의 윗부분이 잘리는 상황이 발생하였지만, 모든 1~3m 상황에서 증가되는 양에는 차이가 있더라도, 증가되는 경향은 계속 보였기 때문에, 각 거리와 구멍의 크기를 일대일 대응시킬 수 있었다. 
 
 
 --------------
 
-## 알고리즘 설명
+## 본론
 ![is_center](https://user-images.githubusercontent.com/63354116/125572421-b3185ad1-8bd9-4616-9b18-ccbad96fb9c1.png)
 
 > 여기서 장애물의 중점에 드론이 위치한다는 말은 장애물의 중점과 드론이 동일 축상에 위치한다는 것을 의미한다.
@@ -43,7 +53,7 @@
 > 연산량을 최대한으로 줄이기 위하여 input image는 tello가 얻는 frame을 마스킹 한 후에 추가적으로 0.3배 만큼 줄여서 `[216, 288, 1]`형태를 사용한다.
 
 ![cnn_model_architecture](cnn/cnn_model_architecture.PNG)
->결과적으로 드론은 장애물의 중점에 위치되도록 ryze tello drone이 제공하는 6가지 이동방향에 해당하는 `[back, forward, left, right, up, down]` 결론을 내리게 된다.
+>결과적으로 드론은 장애물의 중점에 위치되도록 ryze tello drone이 제공하는 6가지 이동방향 `[back, forward, left, right, up, down]` 에 해당하는 결론을 내리게 된다.
 
 ![cnn_label_result](cnn/cnn_label_result.png)
 
@@ -80,10 +90,10 @@
 
 --------------
 
-## 소스코드 설명
+### 4. 소스코드 설명
 #### 1) HSV Transformation and Masking Processing
 > 연산량을 줄이기 위해 tello가 얻는 frame을 HSV 색공간으로 변환한 후, 특정 색상만 검출되도록 마스킹 처리한다.       
-  
+
 > 장애물의 색상과 표식의 색상에 대해서만 마스킹 처리하였으며, 각 색상에 대한 마스킹 처리는 함수화한다. 
 <pre>
 <code>
@@ -98,9 +108,9 @@ function masked_blue = masking_blue(frame)
 end
 </code>
 </pre>
-> 장애물 색상에 해당하는 파란색만 검출되도록 마스킹 처리한다. 마스킹 처리가 완료되면 3차원 배열인 RGB에서 흑백에 해당하는 2차원 배열로 변환되며, 파란색은 백색, 파란색을 제외한 나머지 색상은 흑색으로 인식된다. 
-               
-	                
+> 장애물 색상에 해당하는 파란색만 검출되도록 마스킹 처리한다. 마스킹 처리가 완료되면 3차원 배열인 RGB에서 흑백에 해당하는 2차원 배열로 변환되며, 파란색은 백색(1), 파란색을 제외한 나머지 색상은 흑색(0)으로 인식된다. 
+
+
 <pre>
 <code>
 function masked_red = masking_red(frame)
@@ -112,9 +122,9 @@ function masked_red = masking_red(frame)
 end
 </code>
 </pre>
-> 1-2단계 표식에 해당하는 빨간색만 검출되도록 마스킹 처리한다. 마스킹 처리가 완료되면 빨간색은 백색, 빨간색을 제외한 나머지 색상은 흑색으로 인식된다.
-                
-                     
+> 1-2단계 표식에 해당하는 빨간색만 검출되도록 마스킹 처리한다. 마스킹 처리가 완료되면 빨간색은 백색(1), 빨간색을 제외한 나머지 색상은 흑색(0)으로 인식된다.
+
+
 <pre>
 <code>
 function masked_purple = masking_purple(frame)
@@ -126,9 +136,9 @@ function masked_purple = masking_purple(frame)
 end
 </code>
 </pre>
-> 3단계 표식에 해당하는 보라색만 검출되도록 마스킹 처리한다. 마스킹 처리가 완료되면 보라색은 백색, 보라색을 제외한 나머지 색상은 흑색으로 인식된다.
-                   
-		   
+> 3단계 표식에 해당하는 보라색만 검출되도록 마스킹 처리한다. 마스킹 처리가 완료되면 보라색은 백색(1), 보라색을 제외한 나머지 색상은 흑색(0)으로 인식된다.
+
+
 #### 2) Distance prediction using multiburve fitting
 > 장애물의 구멍 크기는 각 단계별로 고정된 값이므로, 이를 기반으로 하여 드론이 장애물을 통과하기 위해 전진해야하는 거리를 예측한다. 거리 예측은 다항식 곡선 피팅을 활용한다.
 <pre>
@@ -140,7 +150,7 @@ function hole = finding_hole(detect_blue)
     for i=1:288
         detect_blue(216,i)=1;
      end
-     
+
     hole = imfill(detect_blue,'holes');
     
     for x=1:216
@@ -159,14 +169,12 @@ end
 <pre>
 <code>
 function final_dist = passing_obstacle(hole, p)
-    disp(sum(sum(hole)))
-    reg_exp = polyval(p, sum(sum(hole)));
-    dist = reg_exp;
+    dist = polyval(p, sum(sum(hole)));
     final_dist = round(dist,3)+0.4
 end
 </code>
 </pre>
-> 다항식 곡선피팅을 통해 모든 거리에 대해서 드론이 전진해야 할 이동거리를 예측한다. 예측값은 final_dist라는 변수에 대입한다. 
+> 사전에 학습시켜둔 다항식 곡선 피팅값을 불러오고, 이를 통해 모든 거리에 대해서 드론이 전진해야 할 이동거리를 예측한다. 예측값은 final_dist라는 변수에 대입한다. 
 
 
 #### 3) Mark Recognition
@@ -222,7 +230,6 @@ end
 #### 4) Step 1_passing_obstacle
 > 1단계 장애물은 장애물의 높이가 고정되어 있고, 좌우 이동이 없기 때문에 CNN을 별도로 사용하지 않는다.                
 
-> 드론의 비행 높이를 장애물 중점의 높이와 일치시키고, 다항식 곡선 피팅을 통해 얻은 거리만큼 전진하여 장애물을 통과한다. 
 ##### 4-1) Step1_find_center
 <pre>
 <code>
@@ -270,7 +277,7 @@ function find_center(myDrone, label)
 end
 </code>
 </pre>
-> CNN이 예측한 이동방향에 따라 20cm씩 이동한다. 
+> drone이 움직일 수 있는 최소의 거리는 20cm이므로 중점에서 10cm가 벗어난 상황에도 대응하기 위하여, 좌우, 위아래로 묶음지어 하나는 20cm, 반대 방향은 30cm가 이동하도록 한다. 
 
 
 #### 6) Passing_obstacle_using_CNN
@@ -280,7 +287,7 @@ end
 while 1
     frame = snapshot(cam);
     masked_blue = masking_blue(frame);
-    
+
     label = classify(net, masked_blue);
     
     if label == "forward"
@@ -315,4 +322,8 @@ moveforward(myDrone, "Distance", 0.2)
 </code>
 </pre>
 
-> 드론이 장애물의 중점과 동일한 축상에 존재할 경우(label == forward일 경우)에는 다항식 곡선피팅을 이용하여 예측한 거리만큼 드론을 전진한다. 
+> 드론이 장애물의 중점과 동일한 축상에 존재할 경우(label == forward일 경우)에는 다항식 곡선피팅을 이용하여 예측한 거리만큼 드론을 전진한다.                      
+
+## 결론
+### 1. 실제 비행 장면
+### 2. 저자
