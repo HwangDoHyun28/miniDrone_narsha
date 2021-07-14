@@ -16,14 +16,7 @@
 
 ### 2. File structure
 ├── cnn                 
-│       └── model: drone_cnn.onnx    
-├── direction                                         
-│       ├── forward           
-│       ├── back    
-│       ├── left             
-│       ├── right    
-│       ├── up    
-│       └── down    
+│       └── model: drone_cnn.onnx      
 ├── regression                                         
 │       ├── 다항식 곡선 피팅: step1_p2.xls        
 │       ├── 다항식 곡선 피팅: step2_p3.xls             
@@ -224,7 +217,7 @@ end
 
 
 #### 4) Step 1_passing_obstacle
-> 1단계 장애물은 장애물의 높이가 고정되어 있고, 좌우 이동이 없기 때문에 CNN을 별도로 사용하지 않는다. 드론의 비행 높이를 장애물 중점의 높이와 일치시키고, 다식 곡선 피팅을 통해 얻은 거리만큼 전진하여 장애물을 통과한다. 
+> 1단계 장애물은 장애물의 높이가 고정되어 있고, 좌우 이동이 없기 때문에 CNN을 별도로 사용하지 않는다. 드론의 비행 높이를 장애물 중점의 높이와 일치시키고, 다항식 곡선 피팅을 통해 얻은 거리만큼 전진하여 장애물을 통과한다. 
 ##### 4-1) Step1_find_center
 <pre>
 <code>
@@ -247,26 +240,22 @@ end
 
 
 #### 5) Step 2,3_passing_obstacle
-> 2-3단계 장애물은 장애물의 많은 경우의 수가 존재하기에 CNN을 활용하여 드론의 이동방향을 결정한다. 
+> 2-3단계 장애물은 많은 경우의 수가 존재하기에 CNN을 활용하여 드론의 이동방향을 결정한다. 
 <pre>
 <code>
 function find_center(myDrone, label)
     if label == "right"
         fprintf("Moving the drone right\n")
         moveright(myDrone, "Distance", 0.2)
-    %CNN이 예측한 드론의 이동방향이 Left일 경우 왼쪽으로 20cm 이동.
     elseif label == "left"
         fprintf("Moving the drone left\n")
         moveleft(myDrone, "Distance", 0.3)
-    %CNN이 예측한 드론의 이동방향이 Up일 경우 20cm 상승.
     elseif label == "up"
         fprintf("Moving the drone up\n")
         moveup(myDrone, "Distance", 0.2)
-    %CNN이 예측한 드론의 이동방향이 Down일 경우 20cm 하강.
     elseif label == "down"
         fprintf("Moving the drone down\n")
         movedown(myDrone, "Distance", 0.3)
-    %CNN이 예측한 드론의 이동방향이 Back일 경우 20cm 후진.
     elseif label == "back"
         fprintf("Moving the drone back\n")
         moveback(myDrone, "Distance", 0.2)
@@ -286,11 +275,10 @@ while 1
     frame = snapshot(cam);
     masked_blue = masking_blue(frame);
     
-    % .
     label = classify(net, masked_blue);
     
     if label == "forward"
-%         fprintf("Moving the drone forward\n")
+         fprintf("Moving the drone forward\n")
         break
     else
         find_center(myDrone, label)
@@ -306,9 +294,7 @@ end
 frame = snapshot(cam);
 masked_blue = masking_blue(frame);
 hole = finding_hole(masked_blue);
-% f = figure;
-% imshow(hole)
-% hold on;
+
 final_dist = passing_obstacle(hole, p2)
 while final_dist == inf
     moveforward(myDrone, "Distance", 0.2)
@@ -316,11 +302,10 @@ while final_dist == inf
 end
 
 moveforward(myDrone, "Distance", final_dist)
-% close(f)
 detecting_red(myDrone, cam)
 moveforward(myDrone, "Distance", 0.2)
 
 </code>
 </pre>
 
-> 드론이 장애물의 중점과 동일한 축상에 존재할 경우에는 다중곡선피팅을 이용하여 예측한 거리만큼 드론을 전진한다. 
+> 드론이 장애물의 중점과 동일한 축상에 존재할 경우에는 다항식 곡선피팅을 이용하여 예측한 거리만큼 드론을 전진한다. 
