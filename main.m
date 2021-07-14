@@ -153,7 +153,7 @@ function masked_blue = masking_blue(frame)
     s = hsv(:,:,2);
     v = hsv(:,:,3);
 
-    img = (0.57<h)&(h<0.7)&(0.4<s)&(v>0.3)&(v<0.97);
+    img = (0.57<h)&(h<0.7)&(0.4<s)&(v>0.25)&(v<0.97);
     masked_blue = imresize(img, 0.3);
 end
 
@@ -164,7 +164,7 @@ function masked_red = masking_red(frame)
     h = hsv(:,:,1);
     s = hsv(:,:,2);
     v = hsv(:,:,3);
-    masked_red = (0.95<h)+(h<0.1)&(0.4<s)&(v>0.1)&(v<0.97);
+    masked_red = (0.95<h)+(h<0.1)&(0.7<s)&(v>0.25)&(v<0.95);
 end
 
 
