@@ -83,7 +83,7 @@
 ## 소스코드 설명
 #### 1) HSV Transformation and Masking Processing
 > 연산량을 줄이기 위해 tello가 얻는 frame을 HSV 색공간으로 변환한 후, 특정 색상만 검출되도록 마스킹 처리한다.
-> +장애물의 색상과 표식의 색상에 대해서만 마스킹 처리하였으며, 각 색상에 대한 마스킹 처리는 함수화한다. 
+> 장애물의 색상과 표식의 색상에 대해서만 마스킹 처리하였으며, 각 색상에 대한 마스킹 처리는 함수화한다. 
 <pre>
 <code>
 function masked_blue = masking_blue(frame)
