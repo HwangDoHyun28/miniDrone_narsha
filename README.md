@@ -20,9 +20,9 @@
 ├── direction                                         
 │       ├── forward        
 │       ├── back
-│       ├── left        
+│       ├── left
 │       ├── right
-│       ├── up        
+│       ├── up
 │       └── down
 ├── regression                                         
 │       ├── 다항식 곡선 피팅: step1_p2.xls        
