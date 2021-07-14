@@ -16,7 +16,14 @@
 
 ### 2. File structure
 ├── cnn                 
-│       └── model: drone_cnn.onnx       
+│       └── model: drone_cnn.onnx    
+├── direction                                         
+│       ├── forward           
+│       ├── back    
+│       ├── left             
+│       ├── right    
+│       ├── up    
+│       └── down    
 ├── regression                                         
 │       ├── 다항식 곡선 피팅: step1_p2.xls        
 │       ├── 다항식 곡선 피팅: step2_p3.xls             
@@ -167,9 +174,37 @@ end
 </pre>
 > 다중곡선피팅을 통해 모든 거리에 대해서 드론이 전진해야 할 이동거리를 예측한다.
 
-#### 3) step 1_passing_obstacle
+
+#### 3) Mark Recognition
+<pre>
+<code>
+function detecting_red(myDrone, cam)
+    while 1
+        frame = snapshot(cam);
+        masked_red = masking_red(frame);
+        detect_red_sum = sum(sum(masked_red))
+        % 빨간색 표식의 픽셀 수가 400이상이면 표식을 인식한 것으로 간주.
+        % 픽셀 수가 400이상이면 반시계 방향으로 90도 회전 한 후, 90cm 전진.
+        if detect_red_sum >= 400
+            turn(myDrone,deg2rad(-90));
+            moveforward(myDrone, "Distance", 1)
+            pause(1);
+            break
+        % 픽셀 수가 400미만이면 400이상이 될 때까지 20cm씩 전진.
+        else
+            moveforward(myDrone, "Distance", 0.2)
+        end
+    end
+end
+</code>
+</pre>
+> 1-2단계의 빨간색 표식을 인식한다. 빨간색 표식의 픽셀 수가 400이상이면 표식을 인식한 것으로 간주하고, 픽셀 수가 400이상이면 반시계 방향으로 90도 회전 한 후, 90cm 전진한다. 
+> 픽셀 수가 400미만이면 표식을 인식하기에는 거리가 멀거나, 표식을 인식하지 못한 것으로 간주한다. 따라서 표식을 인식할 수 있도록(픽셀 수가 400이상이 되도록) 20cm씩 전진한다. 
+
+
+#### 4) step 1_passing_obstacle
 > 1단계 장애물은 장애물의 높이가 고정되어 있고, 좌우 이동이 없기 때문에 CNN을 별도로 사용하지 않는다. 드론의 비행 높이를 장애물 중점의 높이와 일치시키고, 다향식 곡선 피팅을 통해 얻은 거리만큼 전진하여 장애물을 통과한다. 
-##### 3-1) step1_find_center
+##### 4-1) step1_find_center
 <pre>
 <code>
 function step1_find_center(myDrone)
