@@ -93,8 +93,6 @@
 > 통과한 후에는 시간을 최대한 줄이기 위하여 표식의 존재여부만을 마스킹을 통하여 확인하고 표식에 해당하는 작업을 시행한다.   
 
 
---------------
-
 ## 7. 소스코드 설명
 ### 1) HSV Transformation and Masking Processing
 > 연산량을 줄이기 위해 tello가 얻는 frame을 HSV 색공간으로 변환한 후, 특정 색상만 검출되도록 마스킹 처리한다.       
@@ -327,6 +325,9 @@ moveforward(myDrone, "Distance", 0.2)
 </pre>
 
 > 드론이 장애물의 중점과 동일한 축상에 존재할 경우(label == forward일 경우)에는 다항식 곡선피팅을 이용하여 예측한 거리만큼 드론을 전진한다.                      
+
+
+--------------
 
 ## 8. 실제 비행 장면
 ![testing](image_sorce/testing.gif)
