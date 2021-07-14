@@ -1,13 +1,12 @@
 # 2021 Mini-drone Narsha
-- CNN, 다항식 곡선 피팅을 활용한 팀 나르샤 2021 mini-drone 기술 워크샵  
-드론이 원형 구멍이 있는 장애물의 중점을 안전하고 신속하게 통과하여, 과녁에 있는 색을 인지하고, 회전과 착륙을 수행하도록 한다. 
+- CNN, 다항식 곡선 피팅을 활용한 팀 나르샤 2021 mini-drone 기술 워크샵     
 
 
-- 저희 팀 나르샤는 드론이 원형장애물을 인지하고, 통과하기 위하여 크게 2가지 알고리즘을 사용합니다.`[back, forward, left, right, up, down]`로 구성된  **6 classes CNN**는 드론을 장애물의 중점에 위치시키며, 이후 드론이 장애물을 통과하기 위해 이동해야 하는 거리는 **다항식 곡선 피팅**을 기반으로 하여 계산합니다. 
+- 드론이 원형장애물을 인지하고, 통과하기 위하여 크게 2가지 알고리즘을 사용한다.`[back, forward, left, right, up, down]`로 구성된  **6 classes CNN**는 드론을 장애물의 중점에 위치시키며, 이후 드론이 장애물을 통과하기 위해 이동해야 하는 거리는 **다항식 곡선 피팅**을 기반으로 하여 계산한다. 
 
 ![testing](image_sorce/testing.gif)
 
-- 실제 드론의 해당대회 맵 이동영상(4배속)입니다.
+- 실제 드론의 해당대회 맵 이동영상(4배속)
 #### :star: Team Narsha 
 - 팀원: [황도현](https://github.com/HwangDoHyun28), [성강](https://github.com/skyriver228), [안온유](https://github.com/dhsdb1970)
 
