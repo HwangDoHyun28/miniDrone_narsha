@@ -15,7 +15,7 @@ net = importONNXNetwork('cnn/drone_cnn_2.onnx', 'OutputLayerType', 'classificati
 myDrone = ryze();
 cam = camera(myDrone);
 takeoff(myDrone); 
-pause(3)
+pause(5)
 
 % step 1_passing_obstacle: not using cnn
 step1_find_center(myDrone);
@@ -66,10 +66,10 @@ while final_dist == inf
     final_dist = passing_obstacle(hole, p2)
 end
 %예측한 값만큼 드론 전진.
-moveforward(myDrone, "Distance", final_dist)
+moveforward(myDrone, "Distance", final_dist+0.1)
 % close(f)
 detecting_red(myDrone, cam)
-moveforward(myDrone, "Distance", 0.2)
+moveforward(myDrone, "Distance", 0.4)
 
 
 % step 3_passing_obstacle: using cnn
@@ -102,7 +102,7 @@ while final_dist == inf
     final_dist = passing_obstacle(hole, p3)
 end
 %예측한 값만큼 드론 전진.
-moveforward(myDrone, "Distance", final_dist+0.2)
+moveforward(myDrone, "Distance", final_dist)
 % close(f)
 detecting_purple(myDrone, cam)
 
