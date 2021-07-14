@@ -268,7 +268,6 @@ function find_center(myDrone, label)
         moveback(myDrone, "Distance", 0.2)
     end
 end
-
 </code>
 </pre>
 > CNN이 예측한 이동방향에 따라 20cm씩 이동한다. 
@@ -297,6 +296,7 @@ end
 
 > CNN이 예측한 이동방향이 forward일 경우에는 드론이 장애물의 중점과 동일한 축상에 위치한 것으로 간주하여 전진만 하면 된다고 인식한다. 따라서 forward일 경우에는 while문을 벗어나고, 더 이상 CNN을 사용하지 않는다. 
 
+
 <pre>
 <code>
 frame = snapshot(cam);
@@ -312,7 +312,6 @@ end
 moveforward(myDrone, "Distance", final_dist)
 detecting_red(myDrone, cam)
 moveforward(myDrone, "Distance", 0.2)
-
 </code>
 </pre>
 
