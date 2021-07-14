@@ -226,7 +226,7 @@ end
 function final_dist = passing_obstacle(hole, frame_num, distance)
     %피팅을 통해 모든 거리에 대해서 드론이 전진해야 할 이동거리를 예측.
     dist = interp1(frame_num,distance,sum(sum(hole)),'spline');
-    final_dist = round(dist,2)+0.6
+    final_dist = round(dist,2)+0.5
 end
 
 
