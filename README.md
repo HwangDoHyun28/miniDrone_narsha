@@ -327,5 +327,5 @@ moveforward(myDrone, "Distance", 0.2)
 <!-- - __B-spline trajectory optimization guided by topological paths__:
 <p align="center">
   <img src="https://github.com/HwangDoHyun28/miniDrone_narsha/blob/master/image_sorce/testing.gif" width = "420" height = "237"/>
-  </p> -->
+</p> 
 ### 2. 저자
