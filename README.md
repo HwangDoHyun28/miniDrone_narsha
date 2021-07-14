@@ -308,7 +308,6 @@ end
 frame = snapshot(cam);
 masked_blue = masking_blue(frame);
 hole = finding_hole(masked_blue);
-
 final_dist = passing_obstacle(hole, p2)
 while final_dist == inf
     moveforward(myDrone, "Distance", 0.2)
@@ -325,4 +324,8 @@ moveforward(myDrone, "Distance", 0.2)
 
 ## 결론
 ### 1. 실제 비행 장면
+<!-- - __B-spline trajectory optimization guided by topological paths__:
+<p align="center">
+  <img src="https://github.com/HwangDoHyun28/miniDrone_narsha/blob/master/image_sorce/testing.gif" width = "420" height = "237"/>
+  </p> -->
 ### 2. 저자
