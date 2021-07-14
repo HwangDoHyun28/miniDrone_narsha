@@ -3,9 +3,12 @@ step1_frame_num = readmatrix('regression/step1_frame_num.xls');
 disp("get step1_frame_num")
 step2_frame_num = readmatrix('regression/step2_frame_num.xls');
 disp("get step2_frame_num")
-step3_frame_num = readmatrix('regression/step3_frame_num.xls');
-disp("get step3_frame_num")
+% step3_frame_num = readmatrix('regression/step3_frame_num.xls');
+% disp("get step3_frame_num")
 distance = [3, 2.75, 2.5, 2.25, 2, 1.75, 1.5, 1.25, 1, 0.75, 0.5];
+
+p3 = readmatrix('regression/step3_p2.xls');
+disp("get p3")
 
 % 1단계는 중점과 드론 사이의 거리에 관여하는 변수가 1개 뿐이므로 높이만을 맞춰주면 된다.
 % 2,3단계는 변수가 다양하기 때문에 CNN을 이용하여 드론의 이동방향을 결정하여 장애물의 중점과 드론의 위치를 일치시킨다.
@@ -27,6 +30,7 @@ hole = finding_hole(masked_blue);
 % imshow(hole)
 % hold on;
 final_dist = passing_obstacle(hole, step1_frame_num, distance)
+
 %예측한 값만큼 드론 전진.
 moveforward(myDrone, "Distance", final_dist)
 % close(f)
@@ -34,6 +38,8 @@ detecting_red(myDrone, cam)
 
 
 % step 2_passing_obstacle: using cnn
+frame = snapshot(cam);
+masked_blue = masking_blue(frame);
 if sum(sum(masked_blue)) < 500
     moveright(myDrone, "Distance", 0.4)
     frame = snapshot(cam);
@@ -114,7 +120,7 @@ hole = finding_hole(masked_blue);
 % f = figure;
 % imshow(hole)
 % hold on;
-final_dist = passing_obstacle(hole, step3_frame_num, distance)
+final_dist = round(polyval(p3, sum(sum(hole))),2)+0.3
 %예측한 값만큼 드론 전진.
 moveforward(myDrone, "Distance", final_dist)
 % close(f)
@@ -220,7 +226,7 @@ end
 function final_dist = passing_obstacle(hole, frame_num, distance)
     %피팅을 통해 모든 거리에 대해서 드론이 전진해야 할 이동거리를 예측.
     dist = interp1(frame_num,distance,sum(sum(hole)),'spline');
-    final_dist = round(dist,2)+0.4
+    final_dist = round(dist,2)+0.6
 end
 
 
