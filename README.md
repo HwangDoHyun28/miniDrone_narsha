@@ -82,3 +82,73 @@
 ![step_2_3](image_sorce/step_2_3.PNG)    
 
 > 통과한 후에는 시간을 최대한 줄이기 위하여 표식의 존재여부만을 마스킹을 통하여 확인하고 표식에 해당하는 작업을 시행해주었다.   
+
+
+--------------
+
+## 소스코드 설명
+#### 1) HSV Transformation and Masking Processing
+> 연산량을 줄이기 위해 tello가 얻는 frame을 HSV 색공간으로 변환한 후, 특정 색상만 검출되도록 마스킹 처리한다.
+> 장애물의 색상과 표식의 색상에 대해서만 마스킹 처리하였으며, 각 색상에 대한 마스킹 처리는 함수화하였다. 
+<pre>
+<code>
+function masked_blue = masking_blue(frame)
+    hsv = rgb2hsv(frame);
+    h = hsv(:,:,1);
+    s = hsv(:,:,2);
+    v = hsv(:,:,3);
+
+    img = (0.57<h)&(h<0.7)&(0.4<s)&(v>0.3)&(v<0.97);
+    masked_blue = imresize(img, 0.3);
+end
+<pre>
+<code>
+> 장애물 색상에 해당하는 파란색만 검출되도록 마스킹 처리한다. 마스킹 처리가 완료되면 3차원 배열인 RGB에서 흑백에 해당하는 2차원 배열로 변환되며, 파란색은 백색, 파란색을 제외한 나머지 색상은 흑색으로 인식된다. 
+
+<pre>
+<code>
+function masked_red = masking_red(frame)
+    hsv = rgb2hsv(frame);
+    h = hsv(:,:,1);
+    s = hsv(:,:,2);
+    v = hsv(:,:,3);
+    masked_red = (0.95<h)+(h<0.1)&(0.4<s)&(v>0.1)&(v<0.97);
+end
+<pre>
+<code>
+> 1-2단계 표식에 해당하는 빨간색만 검출되도록 마스킹 처리한다. 마스킹 처리가 완료되면 빨간색은 백색, 빨간색을 제외한 나머지 색상은 흑색으로 인식된다.
+
+
+<pre>
+<code>
+function masked_red = masking_red(frame)
+    hsv = rgb2hsv(frame);
+    h = hsv(:,:,1);
+    s = hsv(:,:,2);
+    v = hsv(:,:,3);
+    masked_red = (0.95<h)+(h<0.1)&(0.4<s)&(v>0.1)&(v<0.97);
+end
+<pre>
+<code>
+> 3단계 표식에 해당하는 보라색만 검출되도록 마스킹 처리한다. 마스킹 처리가 완료되면 보라색은 백색, 보라색을 제외한 나머지 색상은 흑색으로 인식된다.
+
+#### 2) 1단계 장애물 통과 과정
+<pre>
+<code>
+% step 1_passing_obstacle: not using cnn
+step1_find_center(myDrone);
+frame = snapshot(cam);
+masked_blue = masking_blue(frame);
+hole = finding_hole(masked_blue);
+% f = figure;
+% imshow(hole)
+% hold on;
+final_dist = passing_obstacle(hole, p1)
+while final_dist == inf
+    moveforward(myDrone, "Distance", 0.2)
+    final_dist = passing_obstacle(hole, p1)
+end
+%예측한 값만큼 드론 전진.
+moveforward(myDrone, "Distance", final_dist)
+% close(f)
+detecting_red(myDrone, cam)
