@@ -101,8 +101,8 @@ function masked_blue = masking_blue(frame)
     img = (0.57<h)&(h<0.7)&(0.4<s)&(v>0.3)&(v<0.97);
     masked_blue = imresize(img, 0.3);
 end
-<pre>
-<code>
+</code>
+</pre>
 > 장애물 색상에 해당하는 파란색만 검출되도록 마스킹 처리한다. 마스킹 처리가 완료되면 3차원 배열인 RGB에서 흑백에 해당하는 2차원 배열로 변환되며, 파란색은 백색, 파란색을 제외한 나머지 색상은 흑색으로 인식된다. 
                
 	                
@@ -115,8 +115,8 @@ function masked_red = masking_red(frame)
     v = hsv(:,:,3);
     masked_red = (0.95<h)+(h<0.1)&(0.4<s)&(v>0.1)&(v<0.97);
 end
-<pre>
-<code>
+</code>
+</pre>
 > 1-2단계 표식에 해당하는 빨간색만 검출되도록 마스킹 처리한다. 마스킹 처리가 완료되면 빨간색은 백색, 빨간색을 제외한 나머지 색상은 흑색으로 인식된다.
                 
                      
@@ -129,8 +129,8 @@ function masked_red = masking_red(frame)
     v = hsv(:,:,3);
     masked_red = (0.95<h)+(h<0.1)&(0.4<s)&(v>0.1)&(v<0.97);
 end
-<pre>
-<code>
+</code>
+</pre>
 > 3단계 표식에 해당하는 보라색만 검출되도록 마스킹 처리한다. 마스킹 처리가 완료되면 보라색은 백색, 보라색을 제외한 나머지 색상은 흑색으로 인식된다.
                    
 #### 2) 1단계 장애물 통과 과정
