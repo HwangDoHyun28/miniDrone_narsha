@@ -1,35 +1,32 @@
-% 각 step 별로 다중곡선피팅의 값을 저장해둔 파일을 가져온다.
-p1 = readmatrix('regression/step1_p2.xls');
-disp("get p1")
-p2 = readmatrix('regression/step2_p2.xls');
-disp("get p2")
-p3 = readmatrix('regression/step3_p2.xls');
-disp("get p3")
+% 각 step 별로 피팅값을 준비한다.
+step1_frame_num = readmatrix('regression/step1_frame_num.xls');
+disp("get step1_frame_num")
+step2_frame_num = readmatrix('regression/step2_frame_num.xls');
+disp("get step2_frame_num")
+step3_frame_num = readmatrix('regression/step3_frame_num.xls');
+disp("get step3_frame_num")
+distance = [3, 2.75, 2.5, 2.25, 2, 1.75, 1.5, 1.25, 1, 0.75, 0.5];
 
 % 1단계는 중점과 드론 사이의 거리에 관여하는 변수가 1개 뿐이므로 높이만을 맞춰주면 된다.
 % 2,3단계는 변수가 다양하기 때문에 CNN을 이용하여 드론의 이동방향을 결정하여 장애물의 중점과 드론의 위치를 일치시킨다.
 % ["back", "down", "forward", "left", "right", "up"]의 6가지 방향에 대해 드론의 이동방향을 예측하는 cnn_model을 가져온다.
 classes = ["back", "down", "forward", "left", "right", "up"];
-net = importONNXNetwork('cnn/drone_cnn_2.onnx', 'OutputLayerType', 'classification', "Classes", classes); 
+net = importONNXNetwork('cnn/drone_cnn_6_30.onnx', 'OutputLayerType', 'classification', "Classes", classes); 
 
 myDrone = ryze();
 cam = camera(myDrone);
 takeoff(myDrone); 
-pause(5)
+pause(4)
 
 % step 1_passing_obstacle: not using cnn
 step1_find_center(myDrone);
 frame = snapshot(cam);
 masked_blue = masking_blue(frame);
 hole = finding_hole(masked_blue);
-% f = figure;
+% f = figure
 % imshow(hole)
 % hold on;
-final_dist = passing_obstacle(hole, p1)
-while final_dist == inf
-    moveforward(myDrone, "Distance", 0.2)
-    final_dist = passing_obstacle(hole, p1)
-end
+final_dist = passing_obstacle(hole, step1_frame_num, distance)
 %예측한 값만큼 드론 전진.
 moveforward(myDrone, "Distance", final_dist)
 % close(f)
@@ -37,6 +34,19 @@ detecting_red(myDrone, cam)
 
 
 % step 2_passing_obstacle: using cnn
+if sum(sum(masked_blue)) < 500
+    moveright(myDrone, "Distance", 0.4)
+    frame = snapshot(cam);
+    masked_blue = masking_blue(frame);
+    if sum(sum(masked_blue)) < 1000
+        moveleft(myDrone, "Distance", 0.8)
+        frame = snapshot(cam);
+        masked_blue = masking_blue(frame);
+        if sum(sum(masked_blue)) < 1000
+            moveright(myDrone, "Distance", 0.4)
+        end
+    end
+end
 while 1
     frame = snapshot(cam);
     masked_blue = masking_blue(frame);
@@ -60,19 +70,27 @@ hole = finding_hole(masked_blue);
 % f = figure;
 % imshow(hole)
 % hold on;
-final_dist = passing_obstacle(hole, p2)
-while final_dist == inf
-    moveforward(myDrone, "Distance", 0.2)
-    final_dist = passing_obstacle(hole, p2)
-end
+final_dist = passing_obstacle(hole, step2_frame_num, distance)
 %예측한 값만큼 드론 전진.
-moveforward(myDrone, "Distance", final_dist+0.1)
+moveforward(myDrone, "Distance", final_dist)
 % close(f)
 detecting_red(myDrone, cam)
-moveforward(myDrone, "Distance", 0.4)
 
 
 % step 3_passing_obstacle: using cnn
+if sum(sum(masked_blue)) < 500
+    moveright(myDrone, "Distance", 0.4)
+    frame = snapshot(cam);
+    masked_blue = masking_blue(frame);
+    if sum(sum(masked_blue)) < 1000
+        moveleft(myDrone, "Distance", 0.8)
+        frame = snapshot(cam);
+        masked_blue = masking_blue(frame);
+        if sum(sum(masked_blue)) < 1000
+            moveright(myDrone, "Distance", 0.4)
+        end
+    end
+end
 while 1
     frame = snapshot(cam);
     masked_blue = masking_blue(frame);
@@ -96,11 +114,7 @@ hole = finding_hole(masked_blue);
 % f = figure;
 % imshow(hole)
 % hold on;
-final_dist = passing_obstacle(hole, p3)
-while final_dist == inf
-    moveforward(myDrone, "Distance", 0.2)
-    final_dist = passing_obstacle(hole, p3)
-end
+final_dist = passing_obstacle(hole, step3_frame_num, distance)
 %예측한 값만큼 드론 전진.
 moveforward(myDrone, "Distance", final_dist)
 % close(f)
@@ -121,7 +135,6 @@ function step1_find_center(myDrone)
         end
     end
 end
-
 
 function find_center(myDrone, label)
     if label == "right"
@@ -153,7 +166,7 @@ function masked_blue = masking_blue(frame)
     s = hsv(:,:,2);
     v = hsv(:,:,3);
 
-    img = (0.57<h)&(h<0.7)&(0.4<s)&(v>0.25)&(v<0.97);
+    img = (0.57<h)&(h<0.7)&(0.4<s)&(v>0.3)&(v<0.97);
     masked_blue = imresize(img, 0.3);
 end
 
@@ -164,7 +177,7 @@ function masked_red = masking_red(frame)
     h = hsv(:,:,1);
     s = hsv(:,:,2);
     v = hsv(:,:,3);
-    masked_red = (0.95<h)+(h<0.1)&(0.7<s)&(v>0.25)&(v<0.95);
+    masked_red = (0.95<h)+(h<0.1)&(0.4<s)&(v>0.1)&(v<0.97);
 end
 
 
@@ -183,10 +196,12 @@ function hole = finding_hole(detect_blue)
     for i=1:288
         detect_blue(1,i)=1;
     end
-%     % 마지막 행을 1로 변환
-%     for i=1:288
-%         detect_blue(216,i)=1;
-%     end
+    for h=1:216
+        detect_blue(h,1)=1;
+    end
+    for k=1:216
+        detect_blue(k,288)=1;
+    end
     % 구멍을 채움
     hole = imfill(detect_blue,'holes');
     
@@ -202,12 +217,10 @@ function hole = finding_hole(detect_blue)
 end
 
 
-function final_dist = passing_obstacle(hole, p)
-    %다중곡선피팅을 통해 모든 거리에 대해서 드론이 전진해야 할 이동거리를 예측.
-    disp(sum(sum(hole)))
-    reg_exp = polyval(p, sum(sum(hole)));
-    dist = reg_exp;
-    final_dist = round(dist,3)+0.4
+function final_dist = passing_obstacle(hole, frame_num, distance)
+    %피팅을 통해 모든 거리에 대해서 드론이 전진해야 할 이동거리를 예측.
+    dist = interp1(frame_num,distance,sum(sum(hole)),'spline');
+    final_dist = round(dist,2)+0.4
 end
 
 
@@ -220,7 +233,7 @@ function detecting_red(myDrone, cam)
         % 픽셀 수가 400이상이면 반시계 방향으로 90도 회전 한 후, 90cm 전진.
         if detect_red_sum >= 400
             turn(myDrone,deg2rad(-90));
-            moveforward(myDrone, "Distance", 1)
+            moveforward(myDrone, "Distance", 1.1)
             pause(1);
             break
         % 픽셀 수가 400미만이면 400이상이 될 때까지 20cm씩 전진.
