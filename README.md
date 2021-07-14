@@ -49,7 +49,6 @@
 > 여기서 장애물의 중점에 드론이 위치한다는 말은 장애물의 중점과 드론이 동일 축상에 위치한다는 것을 의미한다.
 
 ### 1. CNN 모델
-![cnn_dataset](cnn/cnn_dataset.png)
 > 연산량을 최대한으로 줄이기 위하여 input image는 tello가 얻는 frame을 마스킹 한 후에 추가적으로 0.3배 만큼 줄여서 `[216, 288, 1]`형태를 사용한다.
 
 ![cnn_model_architecture](cnn/cnn_model_architecture.PNG)
@@ -281,7 +280,7 @@ end
 
 
 #### 6) Passing_obstacle_using_CNN
-> CNN을 이용한 장애물 통과 과정을 정리한 것이다. 해당 방식은 2-3단계 장애물을 통과할 때에만 적용된다. 
+> CNN을 이용한 장애물 통과 과정을 정리한 것이다. 해당 방식은 2,3단계 장애물을 통과할 때에만 적용된다. 
 <pre>
 <code>
 while 1
