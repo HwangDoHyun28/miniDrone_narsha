@@ -41,7 +41,7 @@
 --------------
 
 ## 알고리즘 설명
-![is_center](https://user-images.githubusercontent.com/63354116/125572421-b3185ad1-8bd9-4616-9b18-ccbad96fb9c1.png){: width="800" height="600"}
+![is_center](https://user-images.githubusercontent.com/63354116/125572421-b3185ad1-8bd9-4616-9b18-ccbad96fb9c1.png){: width="400" height="300"}
 > 여기서 장애물의 중점에 드론이 위치한다는 말은 장애물의 중점과 드론이 동일 축상에 위치한다는 것을 의미한다.
 
 ### 1. CNN 모델
