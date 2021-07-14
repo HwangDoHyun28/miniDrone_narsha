@@ -16,7 +16,14 @@
 
 ### 2. File structure
 ├── cnn                 
-│       └── model: drone_cnn.onnx     
+│       └── model: drone_cnn.onnx    
+├── direction                                         
+│       ├── forward           
+│       ├── back    
+│       ├── left             
+│       ├── right    
+│       ├── up    
+│       └── down    
 ├── regression                                         
 │       ├── 다항식 곡선 피팅: step1_p2.xls        
 │       ├── 다항식 곡선 피팅: step2_p3.xls             
@@ -27,7 +34,7 @@
 
 1. 본 대회에서 제공하는 맵은 장애물이 x,y,z축 상에서 고정되지 않고 변동이 가능하여, 장애물의 위치에 대한 수많은 다양성이 존재한다.        장애물의 중점과 같은 좌표값을 찾는 방식의 경우, 특정 상황에서만 적용 가능하기에 발생할 수 있는 모든 경우를 대처하기에는 제한적인 방식이라고 판단하였다.        따라서 장애물의 중점을 구체적인 좌표값으로 찾지 않고, 여러 상황에 대해서 처리가 가능한 CNN을 활용하였다.  
 	- 최대한 많은 예외상황을 처리할 수 있는 CNN모델을 활용해 드론이 장애물을 바라보는 시점의 frame에서 장애물의 중점으로 이동하기 위한 방향을 얻은 후, 해당 방향으로 tello의 최소 거리 단위만큼 움직이도록 하는 방식을 채택하였다. 	
-2. 중점을 찾은 후에 드론이 바라보는 구멍의 크기는 각 단계별로 고정되어 있는 크기이므로, 이에 기반하여, 드론이 장애물을 통과하기 위해 움직여야 하는 거리를 다향식 곡선 피팅을 활용하여 얻었다.
+2. 중점을 찾은 후에 드론이 바라보는 구멍의 크기는 각 단계별로 고정되어 있는 크기이므로, 이에 기반하여, 드론이 장애물을 통과하기 위해 움직여야 하는 거리를 다식 곡선 피팅을 활용하여 얻었다.
 	- 물론 드론이 앞으로 움직이면 일정 거리부터 구멍의 윗부분이 잘리는 상황이 발생하였지만, 모든 1~3m 상황에서 증가되는 크기의 양에는 차이가 있었더라도, 증가되는 경향은 계속 보였기 때문에, 각 거리와 구멍의 크기를 일대일 대응시킬 수 있었다. 
 
 
@@ -128,8 +135,8 @@ end
 > 3단계 표식에 해당하는 보라색만 검출되도록 마스킹 처리한다. 마스킹 처리가 완료되면 보라색은 백색, 보라색을 제외한 나머지 색상은 흑색으로 인식된다.
                    
 		   
-#### 2) distance prediction using multiburve fitting
-> 장애물의 구멍 크기는 각 단계별로 고정된 값이므로, 이를 기반으로 하여 드론이 장애물을 통과하기 위해 전진해야하는 거리를 예측한다. 거리 예측은 다향식 곡선 피팅을 활용다.
+#### 2) Distance prediction using multiburve fitting
+> 장애물의 구멍 크기는 각 단계별로 고정된 값이므로, 이를 기반으로 하여 드론이 장애물을 통과하기 위해 전진해야하는 거리를 예측한다. 거리 예측은 다식 곡선 피팅을 활용한다.
 <pre>
 <code>
 function hole = finding_hole(detect_blue)
@@ -165,10 +172,11 @@ function final_dist = passing_obstacle(hole, p)
 end
 </code>
 </pre>
-> 다중곡선피팅을 통해 모든 거리에 대해서 드론이 전진해야 할 이동거리를 예측한다.
+> 다중곡선피팅을 통해 모든 거리에 대해서 드론이 전진해야 할 이동거리를 예측한다. 예측값은 final_dist라는 변수에 대입한다. 
 
 
 #### 3) Mark Recognition
+##### 3-1) Red Mark Recognition
 <pre>
 <code>
 function detecting_red(myDrone, cam)
@@ -176,14 +184,11 @@ function detecting_red(myDrone, cam)
         frame = snapshot(cam);
         masked_red = masking_red(frame);
         detect_red_sum = sum(sum(masked_red))
-        % 빨간색 표식의 픽셀 수가 400이상이면 표식을 인식한 것으로 간주.
-        % 픽셀 수가 400이상이면 반시계 방향으로 90도 회전 한 후, 90cm 전진.
         if detect_red_sum >= 400
             turn(myDrone,deg2rad(-90));
             moveforward(myDrone, "Distance", 1)
             pause(1);
             break
-        % 픽셀 수가 400미만이면 400이상이 될 때까지 20cm씩 전진.
         else
             moveforward(myDrone, "Distance", 0.2)
         end
@@ -191,13 +196,36 @@ function detecting_red(myDrone, cam)
 end
 </code>
 </pre>
-> 1-2단계의 빨간색 표식을 인식한다. 빨간색 표식의 픽셀 수가 400이상이면 표식을 인식한 것으로 간주하고, 픽셀 수가 400이상이면 반시계 방향으로 90도 회전 한 후, 90cm 전진한다. 
+> 1-2단계의 빨간색 표식을 인식한다. 빨간색 표식의 픽셀 수가 400이상이면 표식을 인식한 것으로 간주하고, 반시계 방향으로 90도 회전 한 후, 90cm 전진한다. 
 > 픽셀 수가 400미만이면 표식을 인식하기에는 거리가 멀거나, 표식을 인식하지 못한 것으로 간주한다. 따라서 표식을 인식할 수 있도록(픽셀 수가 400이상이 되도록) 20cm씩 전진한다. 
 
 
-#### 4) step 1_passing_obstacle
-> 1단계 장애물은 장애물의 높이가 고정되어 있고, 좌우 이동이 없기 때문에 CNN을 별도로 사용하지 않는다. 드론의 비행 높이를 장애물 중점의 높이와 일치시키고, 다향식 곡선 피팅을 통해 얻은 거리만큼 전진하여 장애물을 통과한다. 
-##### 4-1) step1_find_center
+##### 3-2) Purple Mark Recognition
+<pre>
+<code>
+function detecting_purple(myDrone, cam)
+    while 1
+        frame = snapshot(cam);
+        masked_purple = masking_purple(frame);
+        detect_purple_sum = sum(sum(masked_purple))
+        if detect_purple_sum >= 400
+            land(myDrone)
+            pause(1);
+            break
+        else
+            moveforward(myDrone, "Distance", 0.2)
+        end
+    end
+end
+</code>
+</pre>
+> 3단계의 보라색 표식을 인식한다. 보라색 표식의 픽셀 수가 400이상이면 표식을 인식한 것으로 간주하고, 픽셀 수가 400이상이면 착지한다. 
+> 픽셀 수가 400미만이면 표식을 인식하기에는 거리가 멀거나, 표식을 인식하지 못한 것으로 간주한다. 따라서 표식을 인식할 수 있도록(픽셀 수가 400이상이 되도록) 20cm씩 전진한다.
+
+
+#### 4) Step 1_passing_obstacle
+> 1단계 장애물은 장애물의 높이가 고정되어 있고, 좌우 이동이 없기 때문에 CNN을 별도로 사용하지 않는다. 드론의 비행 높이를 장애물 중점의 높이와 일치시키고, 다식 곡선 피팅을 통해 얻은 거리만큼 전진하여 장애물을 통과한다. 
+##### 4-1) Step1_find_center
 <pre>
 <code>
 function step1_find_center(myDrone)
@@ -218,24 +246,81 @@ end
 > 중점의 높이와 height 간의 차가 양수일 경우에는 드론이 상승하도록 하고, 음수일 경우에는 하강하도록 한다. 
 
 
+#### 5) Step 2,3_passing_obstacle
+> 2-3단계 장애물은 장애물의 많은 경우의 수가 존재하기에 CNN을 활용하여 드론의 이동방향을 결정한다. 
+<pre>
+<code>
+function find_center(myDrone, label)
+    if label == "right"
+        fprintf("Moving the drone right\n")
+        moveright(myDrone, "Distance", 0.2)
+    %CNN이 예측한 드론의 이동방향이 Left일 경우 왼쪽으로 20cm 이동.
+    elseif label == "left"
+        fprintf("Moving the drone left\n")
+        moveleft(myDrone, "Distance", 0.3)
+    %CNN이 예측한 드론의 이동방향이 Up일 경우 20cm 상승.
+    elseif label == "up"
+        fprintf("Moving the drone up\n")
+        moveup(myDrone, "Distance", 0.2)
+    %CNN이 예측한 드론의 이동방향이 Down일 경우 20cm 하강.
+    elseif label == "down"
+        fprintf("Moving the drone down\n")
+        movedown(myDrone, "Distance", 0.3)
+    %CNN이 예측한 드론의 이동방향이 Back일 경우 20cm 후진.
+    elseif label == "back"
+        fprintf("Moving the drone back\n")
+        moveback(myDrone, "Distance", 0.2)
+    end
+end
+
+</code>
+</pre>
+> CNN이 예측한 이동방향에 따라 20cm씩 이동한다. 
 
 
+#### 6) Passing_obstacle_using_CNN
+> CNN을 이용한 장애물 통과 과정을 정리한 것이다. 해당 방식은 2-3단계 장애물을 통과할 때에만 적용된다. 
+<pre>
+<code>
+while 1
+    frame = snapshot(cam);
+    masked_blue = masking_blue(frame);
+    
+    % .
+    label = classify(net, masked_blue);
+    
+    if label == "forward"
+%         fprintf("Moving the drone forward\n")
+        break
+    else
+        find_center(myDrone, label)
+    end
+end
+</code>
+</pre>
+> CNN을 통해 예측한 이동 방향을 label 변수에 대입한다. 
+> CNN이 예측한 이동방향이 forward일 경우에는 드론이 장애물의 중점과 동일한 축상에 위치한 것으로 간주하여 전진만 하면 된다고 인식한다. 따라서 forward일 경우에는 while문을 벗어나고, 더 이상 CNN을 사용하지 않는다. 
 
-
-% step 1_passing_obstacle: not using cnn
-step1_find_center(myDrone);
+<pre>
+<code>
 frame = snapshot(cam);
 masked_blue = masking_blue(frame);
 hole = finding_hole(masked_blue);
 % f = figure;
 % imshow(hole)
 % hold on;
-final_dist = passing_obstacle(hole, p1)
+final_dist = passing_obstacle(hole, p2)
 while final_dist == inf
     moveforward(myDrone, "Distance", 0.2)
-    final_dist = passing_obstacle(hole, p1)
+    final_dist = passing_obstacle(hole, p2)
 end
-%예측한 값만큼 드론 전진.
+
 moveforward(myDrone, "Distance", final_dist)
 % close(f)
 detecting_red(myDrone, cam)
+moveforward(myDrone, "Distance", 0.2)
+
+</code>
+</pre>
+
+> 드론이 장애물의 중점과 동일한 축상에 존재할 경우에는 다중곡선피팅을 이용하여 예측한 거리만큼 드론을 전진한다. 
