@@ -242,9 +242,9 @@ function detecting_red(myDrone, cam)
             moveforward(myDrone, "Distance", 1.3, 'Speed', 1)
             pause(1);
             break
-        % 픽셀 수가 400미만이면 400이상이 될 때까지 20cm씩 전진.
+        % 픽셀 수가 400미만이면 400이상이 될 때까지 20cm씩 상승.
         else
-            moveforward(myDrone, "Distance", 0.2)
+            moveup(myDrone, "Distance", 0.2)
         end
     end
 end
@@ -261,9 +261,9 @@ function detecting_purple(myDrone, cam)
             land(myDrone)
             pause(1);
             break
-        % 픽셀 수가 400미만이면 400이상이 될 때까지 20cm씩 전진.
+        % 픽셀 수가 400미만이면 400이상이 될 때까지 20cm씩 상승.
         else
-            moveforward(myDrone, "Distance", 0.2)
+            moveup(myDrone, "Distance", 0.2)
         end
     end
 end
