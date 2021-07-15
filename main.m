@@ -14,7 +14,7 @@ disp("get p3")
 % 2,3단계는 변수가 다양하기 때문에 CNN을 이용하여 드론의 이동방향을 결정하여 장애물의 중점과 드론의 위치를 일치시킨다.
 % ["back", "down", "forward", "left", "right", "up"]의 6가지 방향에 대해 드론의 이동방향을 예측하는 cnn_model을 가져온다.
 classes = ["back", "down", "forward", "left", "right", "up"];
-net = importONNXNetwork('cnn/drone_cnn_1_30.onnx', 'OutputLayerType', 'classification', "Classes", classes); 
+net = importONNXNetwork('cnn/drone_cnn_6_30.onnx', 'OutputLayerType', 'classification', "Classes", classes); 
 
 myDrone = ryze();
 cam = camera(myDrone);
