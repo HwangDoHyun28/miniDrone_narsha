@@ -32,7 +32,7 @@ hole = finding_hole(masked_blue);
 final_dist = passing_obstacle(hole, step1_frame_num, distance)
 
 %예측한 값만큼 드론 전진.
-moveforward(myDrone, "Distance", final_dist)
+moveforward(myDrone, "Distance", final_dist, "Speed", 0.8)
 % close(f)
 detecting_red(myDrone, cam)
 
@@ -78,7 +78,7 @@ hole = finding_hole(masked_blue);
 % hold on;
 final_dist = passing_obstacle(hole, step2_frame_num, distance)
 %예측한 값만큼 드론 전진.
-moveforward(myDrone, "Distance", final_dist)
+moveforward(myDrone, "Distance", final_dist, "Speed", 0.8)
 % close(f)
 detecting_red(myDrone, cam)
 
@@ -122,7 +122,7 @@ hole = finding_hole(masked_blue);
 % hold on;
 final_dist = round(polyval(p3, sum(sum(hole))),2)+0.3
 %예측한 값만큼 드론 전진.
-moveforward(myDrone, "Distance", final_dist)
+moveforward(myDrone, "Distance", final_dist, "Speed", 0.8)
 % close(f)
 detecting_purple(myDrone, cam)
 
@@ -239,7 +239,7 @@ function detecting_red(myDrone, cam)
         % 픽셀 수가 400이상이면 반시계 방향으로 90도 회전 한 후, 90cm 전진.
         if detect_red_sum >= 400
             turn(myDrone,deg2rad(-90));
-            moveforward(myDrone, "Distance", 1.1)
+            moveforward(myDrone, "Distance", 1.3, "Speed", 1)
             pause(1);
             break
         % 픽셀 수가 400미만이면 400이상이 될 때까지 20cm씩 전진.
