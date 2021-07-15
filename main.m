@@ -32,7 +32,7 @@ hole = finding_hole(masked_blue);
 final_dist = passing_obstacle(hole, step1_frame_num, distance)
 
 %예측한 값만큼 드론 전진.
-moveforward(myDrone, "Distance", final_dist, "Speed", 0.7)
+moveforward(myDrone, "Distance", final_dist)
 % close(f)
 detecting_red(myDrone, cam)
 
@@ -78,7 +78,7 @@ hole = finding_hole(masked_blue);
 % hold on;
 final_dist = passing_obstacle(hole, step2_frame_num, distance)
 %예측한 값만큼 드론 전진.
-moveforward(myDrone, "Distance", final_dist, "Speed", 0.7)
+moveforward(myDrone, "Distance", final_dist)
 % close(f)
 detecting_red(myDrone, cam)
 
@@ -122,7 +122,7 @@ hole = finding_hole(masked_blue);
 % hold on;
 final_dist = round(polyval(p3, sum(sum(hole))),2)+0.3
 %예측한 값만큼 드론 전진.
-moveforward(myDrone, "Distance", final_dist, "Speed", 0.7)
+moveforward(myDrone, "Distance", final_dist)
 % close(f)
 detecting_purple(myDrone, cam)
 
