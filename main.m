@@ -19,7 +19,7 @@ net = importONNXNetwork('cnn/drone_cnn_6_30.onnx', 'OutputLayerType', 'classific
 myDrone = ryze();
 cam = camera(myDrone);
 takeoff(myDrone); 
-pause(4)
+pause(1)
 
 % step 1_passing_obstacle: not using cnn
 step1_find_center(myDrone);
